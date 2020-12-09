@@ -14,6 +14,6 @@ router.get('/:id', videogameController.findOneVideogame);
 
 router.delete('/:id', videogameController.deleteVideogame);
 
-router.put('/:id', videogameController.updateVideogame)
+router.put('/:id', videogameController.updateVideogame);
 
 export default router;

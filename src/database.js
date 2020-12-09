@@ -1,20 +1,14 @@
-import mongosee from 'mongoose';
+import mongoose from 'mongoose';
 import config from './config';
 /**
  * PARA LA CONFIGURACIÓN DE LA DB
  */
-/**Funcion inmediatemente invocada */
-(async () => {
-    try {
-        // Obtenemos la conexion de la bd
-        const db = await mongosee.connect(config.mongodbURL,
-            {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-                useFindAndModify: false
-            });
-        console.log('Conexión db: ', db.connection.name);
-    } catch (error) {
-        console.error(error);
-    }
-})();
+mongoose.connect(config.mongodbURL, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true
+    },
+    (err, res) => {
+        if (err) console.log('Error al conectar a la base de datos');
+        else console.log('Conexión db: ', res.connection.name);
+    });

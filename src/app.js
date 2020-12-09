@@ -1,5 +1,6 @@
 import express from 'express';
 import VideogamesRoutes from './routes/videogame.routes';
+import SoundtracksRoutes from './routes/soundtrack.routes';
 import morgan from 'morgan';
 import cors from 'cors';
 
@@ -12,7 +13,7 @@ app.set('port', process.env.PORT || 3000);
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 
 // routes
 app.get('/', (req, res) => {
@@ -22,6 +23,6 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/videogames', VideogamesRoutes);
-
+app.use('/api/soundtracks', SoundtracksRoutes);
 
 export default app;
