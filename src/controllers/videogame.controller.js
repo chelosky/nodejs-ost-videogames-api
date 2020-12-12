@@ -1,109 +1,166 @@
 import Videogame from '../models/Videogame';
 
-export const findAllVideogames = async (req, res) => {
-    try {
-        const videogames = await Videogame.find();
-        res.json(videogames);
-    } catch (error) {
-        res.status(500).json(
-            {
-                message: error.message || 'Algo salio mal al listar videogames'
+export const findAllVideogames = (req, res) => {
+    Videogame.find({})
+        .sort('title')
+        .exec((err, videogames) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    message: 'Algo salio mal al listar los videojuegos',
+                    err
+                });
             }
-        );
-    }
+
+            Videogame.count({}, (err, conteo) => {
+                res.json({
+                    ok: true,
+                    message: 'Videojuegos encontrados',
+                    count: conteo,
+                    videogames
+                });
+            });
+        });
 };
 
-export const createVideogame = async (req, res) => {
-
-    if(!req.body.title){
-        return res.status(400).send({
-            message: 'El contenido no puede ser vacio'
-        })
-    }
-
-    try {
-        // creamos el objetvo
-        const newVG = new Videogame(
-            {
-                title: req.body.title,
-                saga: req.body.saga ? req.body.saga : '',
-                description: req.body.description,
-                image: req.body.image
+export const findOneVideogame = (req, res) => {
+    Videogame.findById(req.params.id)
+        .exec((err, videogame) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    message: 'Algo salio mal al buscar un Videojuego por id',
+                    err
+                });
             }
-        );
-        // guardamos el objeto
-        const vgSaved = await newVG.save();
-        res.json(vgSaved);
-    } catch (error) {
-        res.status(500).json(
-            {
-                message: error.message || 'Algo salio mal al crear videogame'
-            }
-        );
-    }
-    
-};
 
-export const findOneVideogame = async (req, res) => {
-    try {
-        // SI NO EXISTE EL ID SE MUERE XD
-        const videogame = await Videogame.findById(req.params.id);
-        if(!videogame){
-            return res.status(400).json({
-                message: `Videogame con el id ${req.params.id} no existe`
-            })
+            if (!videogame) {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'Videojuego no encontrado'
+                });
+            }
+
+            res.json({
+                ok: true,
+                message: 'Videojuego encontrado',
+                videogame
+            });
+        });
+}
+
+export const createVideogame = (req, res) => {
+
+    // creamos el objetvo
+    const newVG = new Videogame(
+        {
+            title: req.body.title,
+            saga: req.body.saga ? req.body.saga : '',
+            description: req.body.description,
+            image: req.body.image
         }
-        res.json(videogame);
-    } catch (error) {
-        res.status(500).json(
-            {
-                message: error.message || 'Algo salio mal al buscar un videogame por id'
-            }
-        );
-    }
+    );
+    // guardamos el objeto
+    newVG.save((err, videogame) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                message: 'Algo salio mal al crear videojuego',
+                err
+            });
+        }
+
+        if (!videogame) {
+            return res.status(400).json({
+                ok: false,
+                message: 'Videojuego no se pudo crear'
+            });
+        }
+
+        res.json({
+            ok: true,
+            message: 'Videojuego fue creado',
+            soundtrack: videogame
+        });
+
+    });
+
+}
+
+export const updateVideogame = (req, res) => {
+    let id = req.params.id;
+    let body = _.pick(req.body, ['title', 'saga', 'description', 'image']);
+    Videogame.findByIdAndUpdate(id, body, { new: true }, (err, videogame) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                message: 'Algo salio mal al actualizar un videojuego',
+                err
+            });
+        }
+
+        if (!videogame) {
+            return res.status(400).json({
+                ok: false,
+                message: 'Videojuego no encontrado'
+            });
+        }
+
+        res.json({
+            ok: true,
+            message: 'Videojuego fue actualizado',
+            videogame: videogame
+        });
+    });
 }
 
 export const deleteVideogame = async (req, res) => {
-    try {
-        const data = await Videogame.findByIdAndDelete(req.params.id);
+    let id = req.params.id;
+    Videogame.findByIdAndRemove(id, (err, videogame) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                message: 'Algo salio mal al eliminar un videojuego',
+                err
+            });
+        }
+
+        if (!videogame) {
+            return res.status(400).json({
+                ok: false,
+                message: 'Videojuego no encotrado'
+            });
+        }
+
         res.json({
-            message: `${data._id} fue eliminado`
+            ok: true,
+            message: 'Videojuego eliminado',
+            soundtrack: videogame
         });
-    } catch (error) {
-        res.status(500).json(
-            {
-                message: error.message || 'Algo salio mal al eliminar un videogame'
-            }
-        );
-    }
+    });
 }
 
-export const findAllSagaVideogames = async (req, res) => {
-    try {
-        const videogames = await Videogame.find(
-            {
-                saga: req.params.saga
+
+// FIND ALL VIDEOGAMES BY SAGA
+export const findAllSagaVideogames = (req, res) => {
+    let saga = req.params.saga;
+    Videogame.find({saga})
+        .sort('title')
+        .exec((err, videogames) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    message: `Algo salio mal al listar los videojuegos de la saga ${saga}`,
+                    err
+                });
             }
-        );
-        res.json(videogames);
-    } catch (error) {
-        res.status(500).json(
-            {
-                message: error.message || 'Algo salio mal al listar los videogames de una saga'
-            }
-        );
-    }
+
+            res.json({
+                ok: true,
+                message: `Videojuegos encontrados de la saga ${saga}`,
+                count: videogames.length,
+                videogames
+            });
+
+        });
 };
-
-export const updateVideogame = async (req, res) => {
-    try {
-        const updateVG = await Videogame.findByIdAndUpdate(req.params.id, req.body);
-        res.json({ message: 'Videogame fue actualizado' });
-    } catch (error) {
-        res.status(500).json(
-            {
-                message: error.message || 'Algo salio mal al actualizar un videogame'
-            }
-        );
-    }
-}

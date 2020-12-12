@@ -4,7 +4,7 @@ import * as videogameController from '../controllers/videogame.controller';
 const router = Router();
 
 // /api/tasks/
-router.get('/', videogameController.findAllVideogames);
+router.get('/all', videogameController.findAllVideogames);
 
 router.post('/', videogameController.createVideogame);
 
