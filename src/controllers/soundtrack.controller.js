@@ -54,6 +54,14 @@ export const findOneSoundtrack = (req, res) => {
 }
 
 export const createSoundtrack = (req, res) => {
+    req.body.videogame = await Videogame.findOne({ title: req.body.title }).exec();
+    if (req.body.videogame === null) {
+        return res.status(500).json({
+            ok: false,
+            message: 'Algo salio mal buscar el videogame'
+        });
+    }
+
     // creamos el objetvo
     let newST = new Soundtrack({
         name: req.body.name,
@@ -152,52 +160,48 @@ export const findAllSoundtracksOfAVideogame = async(req, res) => {
 // FIND ALL SOUNDTRACKS OF A VIDEOGAME BY NAME
 export const findAllSoundtracksOfAVideogameName = async(req, res) => {
     let name = req.params.name;
-    Videogame.find(
-        {
+    Videogame.find({
             title: name
-        }
-    )
-    .sort('title')
-    .exec((err, videogame) => {
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                message: `Algo salio mal al buscar el videojuego ${name}`,
-                err
-            });
-        }
-        findOSTVideogameID(videogame[0].id, res);
-    });
+        })
+        .sort('title')
+        .exec((err, videogame) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    message: `Algo salio mal al buscar el videojuego ${name}`,
+                    err
+                });
+            }
+            findOSTVideogameID(videogame[0].id, res);
+        });
 }
 
 
-const findOSTVideogameID = ( id , res ) => {
-    Soundtrack.find(
-        {
+const findOSTVideogameID = (id, res) => {
+    Soundtrack.find({
             videogame: id
-        }
-    ).populate('videogame', 'title')
-    .exec((err, soundtrack) => {
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                message: 'Algo salio mal al buscar un soundtrack por videogame id',
-                err
-            });
-        }
+        }).populate('videogame', 'title')
+        .exec((err, soundtrack) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    message: 'Algo salio mal al buscar un soundtrack por videogame id',
+                    err
+                });
+            }
 
-        if (!soundtrack) {
-            return res.status(400).json({
-                ok: false,
-                message: 'Soundtrack de videojuego no encontrado'
-            });
-        }
+            if (!soundtrack) {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'Soundtrack de videojuego no encontrado'
+                });
+            }
 
-        res.json({
-            ok: true,
-            count: soundtrack.length,
-            message: 'Soundtrack de videojuego encontrado',
-            soundtrack
+            res.json({
+                ok: true,
+                count: soundtrack.length,
+                message: 'Soundtrack de videojuego encontrado',
+                soundtrack
+            });
         });
-    });
 }
