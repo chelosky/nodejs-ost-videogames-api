@@ -5,6 +5,7 @@ let soundtrackSchema = new Schema({
     name: {
         type: String,
         required: [true, 'Debe ingresar el nombre del soundtrack'],
+        // unique: true,
         trim: true
     },
     information: {

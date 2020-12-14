@@ -52,14 +52,12 @@ export const findOneVideogame = (req, res) => {
 export const createVideogame = (req, res) => {
 
     // creamos el objetvo
-    const newVG = new Videogame(
-        {
-            title: req.body.title,
-            saga: req.body.saga ? req.body.saga : '',
-            description: req.body.description,
-            image: req.body.image
-        }
-    );
+    const newVG = new Videogame({
+        title: req.body.title,
+        saga: req.body.saga ? req.body.saga : '',
+        description: req.body.description,
+        image: req.body.image
+    });
     // guardamos el objeto
     newVG.save((err, videogame) => {
         if (err) {
@@ -114,7 +112,7 @@ export const updateVideogame = (req, res) => {
     });
 }
 
-export const deleteVideogame = async (req, res) => {
+export const deleteVideogame = async(req, res) => {
     let id = req.params.id;
     Videogame.findByIdAndRemove(id, (err, videogame) => {
         if (err) {
@@ -140,11 +138,25 @@ export const deleteVideogame = async (req, res) => {
     });
 }
 
+export const deleteAllVideogame = async(req, res) => {
+    Videogame.deleteMany().then(function() {
+        res.json({
+            ok: true,
+            message: 'Información eliminada de Videogames'
+        });
+    }).catch(function(error) {
+        res.json({
+            ok: false,
+            message: 'No se pudo eliminar la información de Videogames'
+        });
+        console.log(error);
+    });
+}
 
 // FIND ALL VIDEOGAMES BY SAGA
 export const findAllSagaVideogames = (req, res) => {
     let saga = req.params.saga;
-    Videogame.find({saga})
+    Videogame.find({ saga })
         .sort('title')
         .exec((err, videogames) => {
             if (err) {

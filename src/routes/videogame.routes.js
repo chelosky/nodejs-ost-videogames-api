@@ -12,8 +12,10 @@ router.get('/saga/:saga', videogameController.findAllSagaVideogames);
 
 router.get('/:id', videogameController.findOneVideogame);
 
+router.put('/:id', videogameController.updateVideogame);
+
 router.delete('/:id', videogameController.deleteVideogame);
 
-router.put('/:id', videogameController.updateVideogame);
+router.delete('/clean/db', videogameController.deleteAllVideogame);
 
 export default router;

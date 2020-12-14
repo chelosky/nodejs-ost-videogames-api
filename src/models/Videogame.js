@@ -24,6 +24,6 @@ const videogameSchema = new Schema({
     timestamps: true
 });
 
-soundtrackSchema.plugin(uniqueValidator, { message: '{PATH} debe de ser único' });
+videogameSchema.plugin(uniqueValidator, { message: '{PATH} debe de ser único' });
 
 export default model('Videogame', videogameSchema);

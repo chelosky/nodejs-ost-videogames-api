@@ -2,8 +2,6 @@ import { Router } from 'express';
 import * as soundtrackController from '../controllers/soundtrack.controller';
 
 const router = Router();
-const express = require('express');
-let app = express();
 
 // /api/tasks/
 router.get('/all', soundtrackController.findAllSoundtracks);
@@ -21,5 +19,6 @@ router.put('/:id', soundtrackController.updateSoundtrack);
 
 router.delete('/:id', soundtrackController.deleteSoundtrack);
 
+router.delete('/clean/db', soundtrackController.deleteAllSoundtrack);
 
 export default router;

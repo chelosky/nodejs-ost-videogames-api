@@ -53,8 +53,8 @@ export const findOneSoundtrack = (req, res) => {
         });
 }
 
-export const createSoundtrack = (req, res) => {
-    req.body.videogame = await Videogame.findOne({ title: req.body.title }).exec();
+export const createSoundtrack = async(req, res) => {
+    const videogame = await Videogame.findOne({ title: req.body.title }).exec();
     if (req.body.videogame === null) {
         return res.status(500).json({
             ok: false,
@@ -67,7 +67,7 @@ export const createSoundtrack = (req, res) => {
         name: req.body.name,
         information: req.body.information,
         url: req.body.url,
-        videogame: req.body.videogame
+        videogame: videogame || req.body.videogame
     });
     // guardamos el objeto
     newST.save((err, soundtrackDB) => {
@@ -148,6 +148,21 @@ export const deleteSoundtrack = async(req, res) => {
             message: 'Soundtrack eliminado',
             soundtrack: soundtrackDeleted
         });
+    });
+}
+
+export const deleteAllSoundtrack = (req, res) => {
+    Soundtrack.deleteMany().then(function() {
+        res.json({
+            ok: true,
+            message: 'Información eliminada de Soundtracks'
+        });
+    }).catch(function(error) {
+        res.json({
+            ok: false,
+            message: 'No se pudo eliminar la información de Soundtracks'
+        });
+        console.log(error);
     });
 }
 
