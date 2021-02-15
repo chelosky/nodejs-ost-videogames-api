@@ -12,7 +12,6 @@ router.get('/videogame/:id', soundtrackController.findAllSoundtracksOfAVideogame
 
 router.get('/videogame/name/:name', soundtrackController.findAllSoundtracksOfAVideogameName);
 
-
 router.post('/', soundtrackController.createSoundtrack);
 
 router.put('/:id', soundtrackController.updateSoundtrack);

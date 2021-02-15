@@ -54,8 +54,17 @@ export const findOneSoundtrack = (req, res) => {
 }
 
 export const createSoundtrack = async(req, res) => {
-    const videogame = await Videogame.findOne({ title: req.body.title }).exec();
-    if (req.body.videogame === null) {
+    let videogame;
+    try {
+        videogame = await Videogame.findById( req.body.idVideogame ).exec();
+    } catch (error) {
+        return res.status(400).json({
+            ok: false,
+            message: 'Algo salio mal buscar el videogame',
+            error
+        });
+    }
+    if ( req.body.idVideogame === null || videogame === null) {
         return res.status(500).json({
             ok: false,
             message: 'Algo salio mal buscar el videogame'
@@ -67,7 +76,7 @@ export const createSoundtrack = async(req, res) => {
         name: req.body.name,
         information: req.body.information,
         url: req.body.url,
-        videogame: videogame || req.body.videogame
+        videogame: videogame
     });
     // guardamos el objeto
     newST.save((err, soundtrackDB) => {

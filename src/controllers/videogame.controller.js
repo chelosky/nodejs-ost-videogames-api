@@ -78,7 +78,7 @@ export const createVideogame = (req, res) => {
         res.json({
             ok: true,
             message: 'Videojuego fue creado',
-            soundtrack: videogame
+            videogame: videogame
         });
 
     });
@@ -157,7 +157,7 @@ export const deleteAllVideogame = async(req, res) => {
 export const findAllSagaVideogames = (req, res) => {
     let saga = req.params.saga;
     Videogame.find({ saga })
-        .sort('title')
+        .sort('createdAt')
         .exec((err, videogames) => {
             if (err) {
                 return res.status(500).json({
@@ -172,6 +172,30 @@ export const findAllSagaVideogames = (req, res) => {
                 message: `Videojuegos encontrados de la saga ${saga}`,
                 count: videogames.length,
                 videogames
+            });
+
+        });
+};
+
+
+// FIND VIDEOGAME BY NAME
+export const findVideogameName = (req, res) => {
+    let title = req.body.title;
+    Videogame.findOne({ title })
+        .sort('title')
+        .exec((err, videogame) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    message: `Algo salio mal al buscar videojuego con nombre ${title}`,
+                    err
+                });
+            }
+
+            res.json({
+                ok: true,
+                message: `Videojuego encontrado`,
+                videogame
             });
 
         });

@@ -8,6 +8,8 @@ router.get('/all', videogameController.findAllVideogames);
 
 router.post('/', videogameController.createVideogame);
 
+router.post('/name', videogameController.findVideogameName);
+
 router.get('/saga/:saga', videogameController.findAllSagaVideogames);
 
 router.get('/:id', videogameController.findOneVideogame);

@@ -1,7 +1,6 @@
 import express from 'express';
 import VideogamesRoutes from './routes/videogame.routes';
 import SoundtracksRoutes from './routes/soundtrack.routes';
-import UploadExcelRoutes from './routes/uploadexcel.routes';
 import morgan from 'morgan';
 import path from 'path';
 import cors from 'cors';
@@ -9,7 +8,7 @@ import cors from 'cors';
 const app = express();
 
 //settings
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 3500);
 
 //public folder
 const publicPath = path.resolve(__dirname, './public');
@@ -30,6 +29,5 @@ app.get('/api/', (req, res) => {
 
 app.use('/api/videogames', VideogamesRoutes);
 app.use('/api/soundtracks', SoundtracksRoutes);
-app.use('/api/uploadexcel', UploadExcelRoutes);
 
 export default app;
