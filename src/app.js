@@ -8,7 +8,7 @@ import cors from 'cors';
 const app = express();
 
 //settings
-app.set('port', process.env.PORT || 3500);
+app.set('port', process.env.PORT || 3000);
 
 //public folder
 const publicPath = path.resolve(__dirname, './public');
