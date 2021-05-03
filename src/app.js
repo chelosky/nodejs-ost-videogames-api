@@ -23,11 +23,12 @@ app.use(express.urlencoded({ extended: false }));
 // routes
 app.get('/api/', (req, res) => {
     res.json({
-        message: 'GET DE TESTING'
+        videogames: 'api/videogame',
+        soundtracks: 'api/soundtrack'
     })
 });
 
-app.use('/api/videogames', VideogamesRoutes);
-app.use('/api/soundtracks', SoundtracksRoutes);
+app.use('/api/videogame', VideogamesRoutes);
+app.use('/api/soundtrack', SoundtracksRoutes);
 
 export default app;

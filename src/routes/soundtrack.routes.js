@@ -1,10 +1,14 @@
 import { Router } from 'express';
+import { verifyAdminToken } from '../middlewares/admin-token';
 import * as soundtrackController from '../controllers/soundtrack.controller';
 
 const router = Router();
 
-// /api/tasks/
-router.get('/all', soundtrackController.findAllSoundtracks);
+/**************************
+    PUBLIC ENDPOINTS -> api/soundtracks
+***************************/
+
+router.get('/', soundtrackController.findAllSoundtracks);
 
 router.get('/:id', soundtrackController.findOneSoundtrack);
 
@@ -12,12 +16,16 @@ router.get('/videogame/:id', soundtrackController.findAllSoundtracksOfAVideogame
 
 router.get('/videogame/name/:name', soundtrackController.findAllSoundtracksOfAVideogameName);
 
-router.post('/', soundtrackController.createSoundtrack);
+/**************************
+    ADMIN ENDPOINTS
+***************************/
 
-router.put('/:id', soundtrackController.updateSoundtrack);
+router.post('/', verifyAdminToken,  soundtrackController.createSoundtrack);
 
-router.delete('/:id', soundtrackController.deleteSoundtrack);
+router.put('/:id', verifyAdminToken, soundtrackController.updateSoundtrack);
 
-router.delete('/clean/db', soundtrackController.deleteAllSoundtrack);
+router.delete('/:id', verifyAdminToken, soundtrackController.deleteSoundtrack);
+
+router.delete('/clean/db', verifyAdminToken, soundtrackController.deleteAllSoundtrack);
 
 export default router;

@@ -1,23 +1,34 @@
 import { Router } from 'express';
+import { verifyAdminToken } from '../middlewares/admin-token';
 import * as videogameController from '../controllers/videogame.controller';
+import { validateQuery } from '../middlewares/validate-query';
 
 const router = Router();
 
-// /api/tasks/
-router.get('/all', videogameController.findAllVideogames);
+const  validate_query_vg = validateQuery('videogame'); 
+/**************************
+    PUBLIC ENDPOINTS -> api/videogame
+***************************/
 
-router.post('/', videogameController.createVideogame);
+router.get('/', validate_query_vg, videogameController.findAllVideogames);
 
-router.post('/name', videogameController.findVideogameName);
-
-router.get('/saga/:saga', videogameController.findAllSagaVideogames);
 
 router.get('/:id', videogameController.findOneVideogame);
 
-router.put('/:id', videogameController.updateVideogame);
+/**************************
+ ADMIN ENDPOINTS
+ ***************************/
 
-router.delete('/:id', videogameController.deleteVideogame);
+router.post('/', verifyAdminToken, videogameController.createVideogame);
 
-router.delete('/clean/db', videogameController.deleteAllVideogame);
+router.put('/:id', verifyAdminToken, videogameController.updateVideogame);
+
+// router.post('/name/:name', verifyAdminToken, videogameController.findVideogameName);
+
+// router.post('/saga/:saga', verifyAdminToken, videogameController.findAllSagaVideogames);
+
+router.delete('/:id', verifyAdminToken, videogameController.deleteVideogame);
+
+router.delete('/clean/db', verifyAdminToken, videogameController.deleteAllVideogame);
 
 export default router;
