@@ -23,7 +23,8 @@ app.use(express.urlencoded({ extended: false }));
 // routes
 app.get('/api/', (req, res) => {
     res.json({
-        message: 'GET DE TESTING'
+        videogames: 'api/videogame',
+        soundtracks: 'api/soundtrack'
     })
 });
 
