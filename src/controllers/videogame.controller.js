@@ -1,7 +1,7 @@
 import Videogame from '../models/Videogame';
-
 export const findAllVideogames = (req, res) => {
-    Videogame.find({})
+
+    Videogame.find({...req.query})
         .sort('title')
         .exec((err, videogames) => {
             if (err) {
@@ -12,13 +12,11 @@ export const findAllVideogames = (req, res) => {
                 });
             }
 
-            Videogame.count({}, (err, conteo) => {
-                res.json({
-                    ok: true,
-                    message: 'Videojuegos encontrados',
-                    count: conteo,
-                    videogames
-                });
+            res.json({
+                ok: true,
+                message: 'Videojuegos encontrados',
+                count: videogames.length,
+                videogames
             });
         });
 };

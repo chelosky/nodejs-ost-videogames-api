@@ -27,7 +27,7 @@ app.get('/api/', (req, res) => {
     })
 });
 
-app.use('/api/videogames', VideogamesRoutes);
-app.use('/api/soundtracks', SoundtracksRoutes);
+app.use('/api/videogame', VideogamesRoutes);
+app.use('/api/soundtrack', SoundtracksRoutes);
 
 export default app;
