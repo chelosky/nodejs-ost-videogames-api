@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { verifyAdminToken } from '../middlewares/admin-token';
-import * as videogameController from '../controllers/videogame.controller';
-import { validateQuery } from '../middlewares/validate-query';
+import { verifyAdminToken } from '../../middlewares/admin-token';
+import { validateQuery } from '../../middlewares/validate-query';
+import * as videogameController from '../../controllers/v1/videogame.controller';
 
 const router = Router();
 
 const  validate_query_vg = validateQuery('videogame'); 
+
 /**************************
     PUBLIC ENDPOINTS -> api/videogame
 ***************************/
@@ -22,10 +23,6 @@ router.get('/:id', videogameController.findOneVideogame);
 router.post('/', verifyAdminToken, videogameController.createVideogame);
 
 router.put('/:id', verifyAdminToken, videogameController.updateVideogame);
-
-// router.post('/name/:name', verifyAdminToken, videogameController.findVideogameName);
-
-// router.post('/saga/:saga', verifyAdminToken, videogameController.findAllSagaVideogames);
 
 router.delete('/:id', verifyAdminToken, videogameController.deleteVideogame);
 

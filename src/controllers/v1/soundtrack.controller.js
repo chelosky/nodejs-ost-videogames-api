@@ -1,11 +1,10 @@
-import Soundtrack from '../models/Soundtrack';
+import Soundtrack from '../../models/Soundtrack';
+import Videogame from '../../models/Videogame';
 import _ from 'underscore';
-import Videogame from '../models/Videogame';
 
 export const findAllSoundtracks = (req, res) => {
-    Soundtrack.find({})
-        .sort('name')
-        .populate('videogame', 'title')
+    Soundtrack.find({...req.query})
+        .sort({name: 1})
         .exec((err, soundtrack) => {
             if (err) {
                 return res.status(500).json({
@@ -15,13 +14,11 @@ export const findAllSoundtracks = (req, res) => {
                 });
             }
 
-            Soundtrack.count({}, (err, conteo) => {
-                res.json({
-                    ok: true,
-                    message: 'Soundtracks encontrados',
-                    count: conteo,
-                    soundtrack
-                });
+            res.json({
+                ok: true,
+                message: 'Soundtracks encontrados',
+                count: soundtrack.length,
+                soundtrack
             });
         });
 };
@@ -173,59 +170,4 @@ export const deleteAllSoundtrack = (req, res) => {
         });
         console.log(error);
     });
-}
-
-// FIND ALL SOUNDTRACKS BY VIDEOGAME ID
-export const findAllSoundtracksOfAVideogame = async(req, res) => {
-    let id = req.params.id;
-    findOSTVideogameID(id, res);
-}
-
-// FIND ALL SOUNDTRACKS OF A VIDEOGAME BY NAME
-export const findAllSoundtracksOfAVideogameName = async(req, res) => {
-    let name = req.params.name;
-    Videogame.find({
-            title: name
-        })
-        .sort('title')
-        .exec((err, videogame) => {
-            if (err) {
-                return res.status(500).json({
-                    ok: false,
-                    message: `Algo salio mal al buscar el videojuego ${name}`,
-                    err
-                });
-            }
-            findOSTVideogameID(videogame[0].id, res);
-        });
-}
-
-
-const findOSTVideogameID = (id, res) => {
-    Soundtrack.find({
-            videogame: id
-        }).populate('videogame', 'title')
-        .exec((err, soundtrack) => {
-            if (err) {
-                return res.status(500).json({
-                    ok: false,
-                    message: 'Algo salio mal al buscar un soundtrack por videogame id',
-                    err
-                });
-            }
-
-            if (!soundtrack) {
-                return res.status(400).json({
-                    ok: false,
-                    message: 'Soundtrack de videojuego no encontrado'
-                });
-            }
-
-            res.json({
-                ok: true,
-                count: soundtrack.length,
-                message: 'Soundtrack de videojuego encontrado',
-                soundtrack
-            });
-        });
 }

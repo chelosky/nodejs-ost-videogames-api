@@ -18,6 +18,10 @@ const videogameSchema = new Schema({
     },
     image: {
         type: String
+    },
+    correlative: {
+        type: Number,
+        default: 1
     }
 }, {
     versionKey: false,

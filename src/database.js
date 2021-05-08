@@ -11,4 +11,4 @@ mongoose.connect(config.mongodbURL, {
     (err, res) => {
         if (err) console.log('Error al conectar a la base de datos');
         else console.log('Conexión db: ', res.connection.name);
-    });
+});

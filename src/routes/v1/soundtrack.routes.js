@@ -1,20 +1,19 @@
 import { Router } from 'express';
-import { verifyAdminToken } from '../middlewares/admin-token';
-import * as soundtrackController from '../controllers/soundtrack.controller';
+import { verifyAdminToken } from '../../middlewares/admin-token';
+import { validateQuery } from '../../middlewares/validate-query';
+import * as soundtrackController from '../../controllers/v1/soundtrack.controller';
 
 const router = Router();
+
+const  validate_query_ost = validateQuery('soundtrack'); 
 
 /**************************
     PUBLIC ENDPOINTS -> api/soundtracks
 ***************************/
 
-router.get('/', soundtrackController.findAllSoundtracks);
+router.get('/', validate_query_ost, soundtrackController.findAllSoundtracks);
 
 router.get('/:id', soundtrackController.findOneSoundtrack);
-
-router.get('/videogame/:id', soundtrackController.findAllSoundtracksOfAVideogame);
-
-router.get('/videogame/name/:name', soundtrackController.findAllSoundtracksOfAVideogameName);
 
 /**************************
     ADMIN ENDPOINTS

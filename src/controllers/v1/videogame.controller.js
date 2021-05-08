@@ -1,8 +1,10 @@
-import Videogame from '../models/Videogame';
+import Videogame from '../../models/Videogame';
+
 export const findAllVideogames = (req, res) => {
 
     Videogame.find({...req.query})
-        .sort('title')
+        .sort({ correlative: 1 })
+        .sort({title: 1})
         .exec((err, videogames) => {
             if (err) {
                 return res.status(500).json({
@@ -54,7 +56,8 @@ export const createVideogame = (req, res) => {
         title: req.body.title,
         saga: req.body.saga ? req.body.saga : '',
         description: req.body.description,
-        image: req.body.image
+        image: req.body.image,
+        correlative: req.body.correlative ? req.body.correlative : 1
     });
     // guardamos el objeto
     newVG.save((err, videogame) => {
@@ -85,7 +88,7 @@ export const createVideogame = (req, res) => {
 
 export const updateVideogame = (req, res) => {
     let id = req.params.id;
-    let body = _.pick(req.body, ['title', 'saga', 'description', 'image']);
+    let body = _.pick(req.body, ['title', 'saga', 'description', 'image','correlative']);
     Videogame.findByIdAndUpdate(id, body, { new: true }, (err, videogame) => {
         if (err) {
             return res.status(500).json({
@@ -150,51 +153,3 @@ export const deleteAllVideogame = async(req, res) => {
         console.log(error);
     });
 }
-
-// FIND ALL VIDEOGAMES BY SAGA
-export const findAllSagaVideogames = (req, res) => {
-    let saga = req.params.saga;
-    Videogame.find({ saga })
-        .sort('createdAt')
-        .exec((err, videogames) => {
-            if (err) {
-                return res.status(500).json({
-                    ok: false,
-                    message: `Algo salio mal al listar los videojuegos de la saga ${saga}`,
-                    err
-                });
-            }
-
-            res.json({
-                ok: true,
-                message: `Videojuegos encontrados de la saga ${saga}`,
-                count: videogames.length,
-                videogames
-            });
-
-        });
-};
-
-
-// FIND VIDEOGAME BY NAME
-export const findVideogameName = (req, res) => {
-    let title = req.body.title;
-    Videogame.findOne({ title })
-        .sort('title')
-        .exec((err, videogame) => {
-            if (err) {
-                return res.status(500).json({
-                    ok: false,
-                    message: `Algo salio mal al buscar videojuego con nombre ${title}`,
-                    err
-                });
-            }
-
-            res.json({
-                ok: true,
-                message: `Videojuego encontrado`,
-                videogame
-            });
-
-        });
-};
