@@ -24,8 +24,49 @@ export const findAllSoundtracks = (req, res) => {
 };
 
 export const findOneSoundtrack = (req, res) => {
+
+    // THIS FORMAT 1,2,3,4,5 to [1,2,3,4,5,6]
+    let ids = req.params.id.split(',');
+    // IF IS JUST ONE ID
+    if(ids.length == 1){
+        findSoundtrackById(req,res);
+    }else{
+        // MORE THAN 1 or just 0
+        findSoundtracksByIds(ids,res);
+    }
+}
+
+const findSoundtracksByIds = (ids, res) => {
+    Soundtrack.find({ '_id': { $in: ids } })
+        .populate('videogame')
+        .exec((err, soundtracks) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    message: 'Algo salio mal al buscar esos Soundtracks por esos ids',
+                    err
+                });
+            }
+
+            if (!soundtracks) {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'Soundtracks no encontrados'
+                });
+            }
+
+            res.json({
+                ok: true,
+                message: 'Soundtracks encontrados',
+                count: soundtracks.length,
+                soundtracks
+            });
+        });
+}
+
+const findSoundtrackById = (req, res) => {
     Soundtrack.findById(req.params.id)
-        .populate('videogame', 'title')
+        .populate('videogame')
         .exec((err, soundtrack) => {
             if (err) {
                 return res.status(500).json({

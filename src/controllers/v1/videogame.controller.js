@@ -24,6 +24,46 @@ export const findAllVideogames = (req, res) => {
 };
 
 export const findOneVideogame = (req, res) => {
+    
+    // THIS FORMAT 1,2,3,4,5 to [1,2,3,4,5,6]
+    let ids = req.params.id.split(',');
+    // IF IS JUST ONE ID
+    if(ids.length == 1){
+        findVideogameById(req,res);
+    }else{
+        // MORE THAN 1 or just 0
+        findVideogamesByIds(ids,res);
+    }
+}
+
+const findVideogamesByIds = (ids, res) => {
+    Videogame.find({ '_id': { $in: ids } })
+        .exec((err, videogames) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    message: 'Algo salio mal al buscar esos Videojuegos por esos ids',
+                    err
+                });
+            }
+
+            if (!videogames) {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'Videojuegos no encontrados'
+                });
+            }
+
+            res.json({
+                ok: true,
+                message: 'Videojuegos encontrados',
+                count: videogames.length,
+                videogames
+            });
+        });
+}
+
+const findVideogameById = (req, res) => {
     Videogame.findById(req.params.id)
         .exec((err, videogame) => {
             if (err) {
@@ -48,6 +88,7 @@ export const findOneVideogame = (req, res) => {
             });
         });
 }
+
 
 export const createVideogame = (req, res) => {
 
