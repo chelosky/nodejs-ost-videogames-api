@@ -1,4 +1,11 @@
 import * as CONSTANT from '../constants';
+import { Types } from 'mongoose';
+
+const ObjectId = Types.ObjectId;
+
+const validateObjectIdArray = (array) => {
+  return array.filter( (id) => ObjectId.isValid(id) );
+};
 
 const collection = {
     limit: 20,
@@ -25,7 +32,8 @@ const collection = {
       }
     }
 }
-  
+
 module.exports = {
     collection,
+    validateObjectIdArray
 }

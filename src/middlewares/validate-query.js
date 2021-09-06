@@ -5,13 +5,15 @@ const validateQuery = (model) => {
 
     return (req, res, next) => {
         let query_sanity = {};
-        
+        let limit = parseInt(req.query[CONSTANT.LIMIT_KEY]) || CONSTANT.DEFAULT_LIMIT;
+        let page = req.query[CONSTANT.NUM_PAGE_KEY] > 1 ? parseInt(req.query[CONSTANT.NUM_PAGE_KEY]) : 1;
+
         Object.keys(req.query).forEach((key) => {
             if (req.query[key] && collection.queries[model].includes(key)) {
                 query_sanity[key] = generateValidParam(model, key, req.query[key]); 
             }
         });
-        req.query = query_sanity;
+        req.query = {...query_sanity, limit, page};
         next();
     }
 }

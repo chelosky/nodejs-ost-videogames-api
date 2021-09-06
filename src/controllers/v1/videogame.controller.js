@@ -1,10 +1,21 @@
 import Videogame from '../../models/Videogame';
+import {validateObjectIdArray} from '../../utils/helpers';
 
-export const findAllVideogames = (req, res) => {
+export const findAllVideogames = async (req, res) => {
 
-    Videogame.find({...req.query})
+    const {limit, page, ...query} = req.query;
+
+    const total = (await Videogame.find(query)).length;
+
+    const currentPage = page - 1;
+
+    const lastPage = Math.ceil(total/limit);
+
+    Videogame.find(query)
         .sort({ correlative: 1 })
         .sort({title: 1})
+        .limit(limit)
+        .skip(limit * currentPage)
         .exec((err, videogames) => {
             if (err) {
                 return res.status(500).json({
@@ -17,16 +28,22 @@ export const findAllVideogames = (req, res) => {
             res.json({
                 ok: true,
                 message: 'Videojuegos encontrados',
-                count: videogames.length,
+                current_page: page,
+                previous_page: page > 1 ? page - 1 : null,
+                next_page: page < lastPage ? page + 1 : null,
+                last_page: lastPage,
+                per_page: limit,
+                total,
                 videogames
             });
         });
 };
 
-export const findOneVideogame = (req, res) => {
+export const findOneVideogame = async (req, res) => {
     
     // THIS FORMAT 1,2,3,4,5 to [1,2,3,4,5,6]
     let ids = req.params.id.split(',');
+    ids = validateObjectIdArray(ids);
     // IF IS JUST ONE ID
     if(ids.length == 1){
         findVideogameById(req,res);
@@ -36,7 +53,7 @@ export const findOneVideogame = (req, res) => {
     }
 }
 
-const findVideogamesByIds = (ids, res) => {
+const findVideogamesByIds = async (ids, res) => {
     Videogame.find({ '_id': { $in: ids } })
         .exec((err, videogames) => {
             if (err) {
@@ -63,7 +80,7 @@ const findVideogamesByIds = (ids, res) => {
         });
 }
 
-const findVideogameById = (req, res) => {
+const findVideogameById = async (req, res) => {
     Videogame.findById(req.params.id)
         .exec((err, videogame) => {
             if (err) {
@@ -90,7 +107,7 @@ const findVideogameById = (req, res) => {
 }
 
 
-export const createVideogame = (req, res) => {
+export const createVideogame = async (req, res) => {
 
     // creamos el objetvo
     const newVG = new Videogame({
@@ -127,7 +144,7 @@ export const createVideogame = (req, res) => {
 
 }
 
-export const updateVideogame = (req, res) => {
+export const updateVideogame = async (req, res) => {
     let id = req.params.id;
     let body = _.pick(req.body, ['title', 'saga', 'description', 'image','correlative']);
     Videogame.findByIdAndUpdate(id, body, { new: true }, (err, videogame) => {
