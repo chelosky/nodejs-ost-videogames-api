@@ -1,11 +1,23 @@
 import Soundtrack from '../../models/Soundtrack';
 import Videogame from '../../models/Videogame';
+import {validateObjectIdArray} from '../../utils/helpers';
 import _ from 'underscore';
 
-export const findAllSoundtracks = (req, res) => {
-    Soundtrack.find({...req.query})
+export const findAllSoundtracks = async (req, res) => {
+
+    const {limit, page, ...query} = req.query;
+
+    const total = (await Soundtrack.find(query)).length;
+
+    const currentPage = page - 1;
+
+    const lastPage = Math.ceil(total/limit);
+
+    Soundtrack.find({...query})
         .sort({name: 1})
-        .exec((err, soundtrack) => {
+        .limit(limit)
+        .skip(limit * currentPage)
+        .exec((err, soundtracks) => {
             if (err) {
                 return res.status(500).json({
                     ok: false,
@@ -17,16 +29,22 @@ export const findAllSoundtracks = (req, res) => {
             res.json({
                 ok: true,
                 message: 'Soundtracks encontrados',
-                count: soundtrack.length,
-                soundtrack
+                current_page: page,
+                previous_page: page > 1 ? page - 1 : null,
+                next_page: page < lastPage ? page + 1 : null,
+                last_page: lastPage,
+                per_page: limit,
+                total,
+                data: soundtracks
             });
         });
 };
 
-export const findOneSoundtrack = (req, res) => {
+export const findOneSoundtrack = async (req, res) => {
 
     // THIS FORMAT 1,2,3,4,5 to [1,2,3,4,5,6]
     let ids = req.params.id.split(',');
+    ids = validateObjectIdArray(ids);
     // IF IS JUST ONE ID
     if(ids.length == 1){
         findSoundtrackById(req,res);
@@ -36,7 +54,7 @@ export const findOneSoundtrack = (req, res) => {
     }
 }
 
-const findSoundtracksByIds = (ids, res) => {
+const findSoundtracksByIds = async (ids, res) => {
     Soundtrack.find({ '_id': { $in: ids } })
         .populate('videogame')
         .exec((err, soundtracks) => {
@@ -64,7 +82,7 @@ const findSoundtracksByIds = (ids, res) => {
         });
 }
 
-const findSoundtrackById = (req, res) => {
+const findSoundtrackById = async (req, res) => {
     Soundtrack.findById(req.params.id)
         .populate('videogame')
         .exec((err, soundtrack) => {
@@ -143,7 +161,7 @@ export const createSoundtrack = async(req, res) => {
 
 }
 
-export const updateSoundtrack = (req, res) => {
+export const updateSoundtrack = async (req, res) => {
     let id = req.params.id;
     let body = _.pick(req.body, ['name', 'information', 'url', 'videogame']);
 
@@ -198,7 +216,7 @@ export const deleteSoundtrack = async(req, res) => {
     });
 }
 
-export const deleteAllSoundtrack = (req, res) => {
+export const deleteAllSoundtrack = async (req, res) => {
     Soundtrack.deleteMany().then(function() {
         res.json({
             ok: true,

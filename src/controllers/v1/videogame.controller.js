@@ -34,7 +34,7 @@ export const findAllVideogames = async (req, res) => {
                 last_page: lastPage,
                 per_page: limit,
                 total,
-                videogames
+                data: videogames
             });
         });
 };
@@ -82,7 +82,7 @@ const findVideogamesByIds = async (ids, res) => {
 
 const findVideogameById = async (req, res) => {
     Videogame.findById(req.params.id)
-        .exec((err, videogame) => {
+        .exec(async (err, videogame) => {
             if (err) {
                 return res.status(500).json({
                     ok: false,
